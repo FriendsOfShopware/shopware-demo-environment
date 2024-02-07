@@ -34,4 +34,8 @@ if [[  ! -z "$EXTENSIONS" ]]; then
     done
 fi
 
+if [[ -f /var/www/html/fixture.php ]]; then
+    php -derror_reporting=E_ALL /var/www/html/fixture.php
+fi
+
 /usr/bin/supervisord -c /etc/supervisord.conf
