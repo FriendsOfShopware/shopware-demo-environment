@@ -26,8 +26,8 @@ services:
       APP_URL: https://froshtools.localhost
       EXTENSIONS: frosh/tools
       TRUSTED_PROXIES: REMOTE_ADDR
-    volumes:
-      - ./fixture.php:/var/www/html/fixture.php
+#    volumes:
+#      - ./fixture.php:/var/www/html/fixture.php
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.froshtools.rule=Host(`froshtools.localhost`)"
