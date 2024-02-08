@@ -43,3 +43,35 @@ docker run \
     -p 8000:8000 \
     ghcr.io/friendsofshopware/shopware-demo-environment:6.5.7.4
 ```
+
+## Running multiple containers
+
+If you want to run multiple containers, you should deploy a Traefik before the containers. This will allow you to access the containers via different subdomains.
+
+See as example the `compose.yml` file
+
+## Custom Fixtures
+
+You can inject a `fixture.php` to `/var/www/html` to run custom commands on the Shopware DI container to poupulate the database with custom data.
+
+Example:
+
+```bash
+docker run \
+    --rm \
+    -e APP_URL=http://localhost:8000 \
+    -e EXTENSIONS="frosh/tools" \
+    -v $(pwd)/fixture.php:/var/www/html/fixture.php \
+    -p 8000:8000 \
+    ghcr.io/friendsofshopware/shopware-demo-environment:6.5.7.4
+```
+
+```php
+<?php
+
+$kernel = require '/opt/shopware/boot.php';
+
+var_dump($kernel->getContainer()->get('product.repository')->getDefinition()->getEntityName());
+```
+
+and this script is executed on any container start, so you can use it to populate the database with custom data. All DI services are available in this script.

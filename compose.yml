@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  reverse-proxy:
+    image: traefik:v2.10
+    command:
+      - --providers.docker
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
+      - --certificatesresolvers.letsencrypt.acme.email=postmaster@localhost
+      - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
+      - --entryPoints.web.http.redirections.entryPoint.to=websecure
+      - --entryPoints.web.http.redirections.entryPoint.scheme=https
+      - --entryPoints.web.http.redirections.entrypoint.permanent=true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - letsencrypt:/letsencrypt
+  froshtools:
+    image: ghcr.io/friendsofshopware/shopware-demo-environment:6.5.8.2
+    platform: linux/amd64
+    environment:
+      APP_URL: https://froshtools.localhost
+      EXTENSIONS: frosh/tools
+      TRUSTED_PROXIES: REMOTE_ADDR
+    volumes:
+      - ./fixture.php:/var/www/html/fixture.php
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.froshtools.rule=Host(`froshtools.localhost`)"
+      - "traefik.http.routers.froshtools.entrypoints=web,websecure"
+      - "traefik.http.routers.froshtools.tls.certresolver=letsencrypt"
+      - "traefik.http.services.froshtools.loadbalancer.server.port=8000"
+
+volumes:
+  letsencrypt:
