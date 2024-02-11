@@ -1,6 +1,11 @@
 name: Build
 on:
   push:
+    branches: 
+      - main
+    paths:
+      - Dockerfile
+      - matrix.nu
 
 env:
   DOCKER_BUILDKIT: 1
