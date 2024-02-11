@@ -75,3 +75,7 @@ var_dump($kernel->getContainer()->get('product.repository')->getDefinition()->ge
 ```
 
 and this script is executed on any container start, so you can use it to populate the database with custom data. All DI services are available in this script.
+
+## Thanks to Namespace.so
+
+Thanks to [namespace.so](https://namespace.so) for sponsoring their fast Docker builder with multi arch support. Checkout [namespace.so](https://namespace.so) if you need better GitHub runners or Docker remote builders.
