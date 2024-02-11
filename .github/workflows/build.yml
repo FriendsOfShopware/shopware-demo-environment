@@ -46,7 +46,7 @@ jobs:
 
         - uses: docker/build-push-action@v5
           with:
-            tags: ghcr.io/friendsofshopware/shopware-demo-environment:${{ matrix.shopwareVersion }}
+            tags: ghcr.io/friendsofshopware/shopware-demo-environment:${{ matrix.minorShopwareVersion }}
             cache-from: type=gha,scope=${{ matrix.shopwareVersion }}
             cache-to: type=gha,mode=max,scope=${{ matrix.shopwareVersion }}
             platforms: linux/amd64
