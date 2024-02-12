@@ -62,4 +62,4 @@ jobs:
               PHP_VERSION=${{ matrix.phpVersion }}
               SHOPWARE_VERSION=${{ matrix.shopwareVersion }}
             push: true
-            provenance: true
+            provenance: false
