@@ -45,6 +45,10 @@ pdo_mysql.default_socket=/run/mysqld/mysqld.sock
 mysqli.default_socket=/run/mysqld/mysqld.sock
 EOF
 
+COPY --chmod=555 <<EOF /usr/local/etc/php/conf.d/99-opcache-dev.ini
+opcache.enable_file_override=0
+EOF
+
 RUN <<EOF
     set -e
     /usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/lib/mysql/plugin --user=www-data &
