@@ -34,6 +34,8 @@ if [[  ! -z "$EXTENSIONS" ]]; then
     done
 fi
 
+rm -rf var/cache
+
 if [[ -f /var/www/html/fixture.php ]]; then
     php -derror_reporting=E_ALL /var/www/html/fixture.php
 fi
