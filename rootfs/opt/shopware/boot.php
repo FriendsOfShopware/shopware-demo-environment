@@ -20,8 +20,7 @@ if (class_exists(KernelFactory::class)) {
     $kernel = KernelFactory::create(
         environment: $env,
         debug: true,
-        classLoader: $classLoader,
-        pluginLoader: new StaticKernelPluginLoader($classLoader)
+        classLoader: $classLoader
     );
 
     $kernel->boot();
