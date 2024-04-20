@@ -12,7 +12,7 @@ docker run \
     # External reachable URL, aka sales channel URL in shopware
     -e APP_URL=http://localhost:8000 \
     -p 8000:8000 \
-    ghcr.io/friendsofshopware/shopware-demo-environment:6.5.7
+    ghcr.io/friendsofshopware/shopware-demo-environment:6.5.8
 ```
 
 [See here for all available images](https://github.com/FriendsOfShopware/shopware-demo-environment/pkgs/container/shopware-demo-environment/versions?filters%5Bversion_type%5D=tagged)
@@ -27,7 +27,7 @@ docker run \
     -e APP_URL=http://localhost:8000 \
     -e EXTENSIONS="frosh/tools" \
     -p 8000:8000 \
-    ghcr.io/friendsofshopware/shopware-demo-environment:6.5.7
+    ghcr.io/friendsofshopware/shopware-demo-environment:6.5.8
 ```
 
 For Shopware Store plugins, you need to pass the `SHOPWARE_PACKAGIST_TOKEN` environment variable generated from a Wildcard environment.
@@ -41,7 +41,7 @@ docker run \
     -e EXTENSIONS="store.shopware.com/froshtools store.shopware.com/froshplatformsharebasket" \
     -e SHOPWARE_PACKAGIST_TOKEN=your-token \
     -p 8000:8000 \
-    ghcr.io/friendsofshopware/shopware-demo-environment:6.5.7
+    ghcr.io/friendsofshopware/shopware-demo-environment:6.5.8
 ```
 
 ## Running multiple containers
@@ -63,7 +63,7 @@ docker run \
     -e EXTENSIONS="frosh/tools" \
     -v $(pwd)/fixture.php:/var/www/html/fixture.php \
     -p 8000:8000 \
-    ghcr.io/friendsofshopware/shopware-demo-environment:6.5.7
+    ghcr.io/friendsofshopware/shopware-demo-environment:6.5.8
 ```
 
 ```php
