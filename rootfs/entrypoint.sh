@@ -3,14 +3,14 @@
 set -e
 set -x
 
-/usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/lib/mysql/plugin --user=mysql &
+/usr/bin/mariadbd --basedir=/usr --datadir=/var/lib/mariadb --plugin-dir=/usr/lib/mariadb/plugin --user=www-data &
 
-while ! mysqladmin ping --silent; do
+while ! mariadb-admin ping --silent; do
     sleep 1
 done
 
 if [[ -n $APP_URL ]]; then
-  mysql -proot shopware -e "UPDATE sales_channel_domain set url = '${APP_URL}'"
+  mariadb -uroot -proot shopware -e "UPDATE sales_channel_domain set url = '${APP_URL}'"
 fi
 
 if [[ ! -z $SHOPWARE_ADMIN_PASSWORD ]]; then
@@ -40,4 +40,4 @@ if [[ -f /var/www/html/fixture.php ]]; then
     php -derror_reporting=E_ALL /var/www/html/fixture.php
 fi
 
-/usr/bin/supervisord -c /etc/supervisord.conf
+exec /usr/bin/hivemind /etc/Procfile
