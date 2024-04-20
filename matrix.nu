@@ -20,7 +20,7 @@ let versions = http get https://raw.githubusercontent.com/FriendsOfShopware/shop
 
     {phpVersion: $value, shopwareVersion: ($key | str downcase), minorShopwareVersion: $version}
 } | reverse | filter {|item|
-    version_compare $item.shopwareVersion "6.5.6"
+    version_compare $item.shopwareVersion "6.5.8"
 } |  uniq-by minorShopwareVersion
 
 $data.matrix.include = $versions;
