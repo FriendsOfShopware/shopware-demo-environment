@@ -3,9 +3,10 @@ ARG SHOPWARE_VERSION=6.5.8.2
 
 RUN <<EOF
     set -e
+    export COMPOSER_ALLOW_SUPERUSER=1
     shopware-cli project create /shop ${SHOPWARE_VERSION}
     shopware-cli project ci /shop
-    COMPOSER_ALLOW_SUPERUSER=1 composer -d /shop require "swag/demo-data:*"
+    composer -d /shop require "swag/demo-data:*"
 EOF
 
 COPY --chmod=555 <<EOF /shop/config/packages/override.yaml
