@@ -53,6 +53,7 @@ RUN <<EOF
         php-8.3-xmlwriter \
         php-8.3-bcmath \
         php-8.3-iconv \
+        php-8.3-mbstring \
         php-8.3-gd \
         php-8.3-intl \
         php-8.3-pdo \
