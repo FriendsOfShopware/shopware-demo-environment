@@ -28,6 +28,7 @@ FROM ghcr.io/shyim/wolfi-php/nginx:8.3
 COPY --from=creation /shop /var/www/html
 
 ENV DATABASE_URL=mysql://root:root@localhost/shopware \
+    LOCK_DSN=flock \
     PHP_MEMORY_LIMIT=512M \
     COMPOSER_ROOT_VERSION=1.0.0 \
     APP_URL=http://localhost:8000
