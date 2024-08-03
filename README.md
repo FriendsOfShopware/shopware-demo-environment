@@ -17,7 +17,7 @@ docker run \
 
 [See here for all available images](https://github.com/FriendsOfShopware/shopware-demo-environment/pkgs/container/shopware-demo-environment/versions?filters%5Bversion_type%5D=tagged)
 
-You can additionall set `SHOPWARE_ADMIN_PASSWORD` to set an different admin password.
+You can additionally set `SHOPWARE_ADMIN_PASSWORD` to set a different admin password.
 
 To install Shopware 6 extensions you will need to set the `EXTENSIONS` environment variable. This variable should be a space separated list of composer packages. For example:
 
@@ -48,11 +48,11 @@ docker run \
 
 If you want to run multiple containers, you should deploy a Traefik before the containers. This will allow you to access the containers via different subdomains.
 
-See as example the `compose.yml` file
+See as an example the `compose.yml` file
 
 ## Custom Fixtures
 
-You can inject a `fixture.php` to `/var/www/html` to run custom commands on the Shopware DI container to poupulate the database with custom data.
+You can inject a `fixture.php` to `/var/www/html` to run custom commands on the Shopware DI container to populate the database with custom data.
 
 Example:
 
@@ -74,7 +74,7 @@ $kernel = require '/opt/shopware/boot.php';
 var_dump($kernel->getContainer()->get('product.repository')->getDefinition()->getEntityName());
 ```
 
-and this script is executed on any container start, so you can use it to populate the database with custom data. All DI services are available in this script.
+This script is executed at any container start, so you can use it to populate the database with custom data. All DI services are available in this script.
 
 ## Thanks to Namespace.so
 
