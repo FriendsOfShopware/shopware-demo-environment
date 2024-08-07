@@ -69,7 +69,8 @@ RUN <<EOF
         php-8.3-sodium \
         php-8.3-opcache \
         openssl-config \
-        mariadb-11.2 \
+        mariadb \
+        mariadb-client \
         jq
 EOF
 
