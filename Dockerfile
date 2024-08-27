@@ -39,7 +39,7 @@ USER root
 
 RUN <<EOF
     set -e
-    
+
     apk add --no-cache \
         php-8.3 \
         php-8.3-fileinfo \
@@ -80,8 +80,25 @@ RUN <<EOF
     mkdir -p /var/tmp /run/mysqld
     mariadb-install-db --datadir=/var/lib/mariadb --user=root
 
-    /usr/bin/mariadbd --basedir=/usr --datadir=/var/lib/mariadb --plugin-dir=/usr/lib/mariadb/plugin --user=root &
-    sleep 2
+    mariadbd --basedir=/usr --datadir=/var/lib/mariadb --plugin-dir=/usr/lib/mariadb/plugin --user=root &
+
+    i=1
+    while [ $i -le 10 ]; do
+        if mariadb-admin ping; then
+            echo "Successfully connected to MariaDB on attempt $i!"
+            break
+        else
+            echo "Attempt $i failed. Retrying in 5 seconds..."
+            sleep 5
+        fi
+        i=$((i + 1))
+    done
+
+    if [ $i -gt 10 ]; then
+        echo "Failed to connect to MariaDB after 10 attempts."
+        exit 1
+    fi
+
     mariadb-admin --user=root password 'root'
     php bin/console system:install --create-database --force
     mariadb -proot shopware -e "DELETE FROM sales_channel WHERE id = 0x98432def39fc4624b33213a56b8c944d"
