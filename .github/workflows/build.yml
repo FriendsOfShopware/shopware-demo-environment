@@ -47,6 +47,9 @@ jobs:
         - name: Checkout
           uses: actions/checkout@v4
 
+        - name: Login into Docker Hub
+          run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+
         - name: Login into Github Docker Registery
           run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
@@ -58,7 +61,9 @@ jobs:
 
         - uses: docker/build-push-action@v5
           with:
-            tags: ghcr.io/friendsofshopware/shopware-demo-environment:${{ matrix.minorShopwareVersion }}
+            tags: |
+              ghcr.io/friendsofshopware/shopware-demo-environment:${{ matrix.minorShopwareVersion }}
+              friendsofshopware/shopware-demo-environment:${{ matrix.minorShopwareVersion }}
             platforms: linux/amd64,linux/arm64
             build-args: |
               PHP_VERSION=${{ matrix.phpVersion }}
