@@ -1,4 +1,4 @@
-FROM friendsofshopware/shopware-cli:latest-php-8.3 as creation
+FROM friendsofshopware/shopware-cli:latest-php-8.3 AS creation
 ARG SHOPWARE_VERSION=6.5.8.2
 
 RUN <<EOF
