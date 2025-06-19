@@ -33,7 +33,7 @@ jobs:
       - name: Generate Matrix
         id: generate-matrix
         run: |
-          MATRIX=$(nu matrix.nu)
+          MATRIX=$(node matrix.js)
           echo "matrix<<EOF" >> $GITHUB_OUTPUT
           echo "$MATRIX" >> $GITHUB_OUTPUT
           echo 'EOF' >> $GITHUB_OUTPUT
