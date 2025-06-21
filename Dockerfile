@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+# check=skip=SecretsUsedInArgOrEnv
 FROM friendsofshopware/shopware-cli:latest-php-8.3 AS creation
 ARG SHOPWARE_VERSION=6.5.8.2
 
@@ -15,12 +17,41 @@ parameters:
 
 framework:
     trusted_proxies: '%env(TRUSTED_PROXIES)%'
+    secrets:
+        enabled: false
+    mailer:
+        message_bus: 'messenger.default_bus'
 
 shopware:
     auto_update:
         enabled: false
     store:
         frw: false
+    cart:
+      compress: false
+    cache:
+        cache_compression: true
+        cache_compression_method: 'zstd'
+    mail:
+        update_mail_variables_on_send: false
+    increment:
+        user_activity:
+            type: 'array'
+        message_queue:
+            type: 'array'
+    admin_worker:
+        enable_admin_worker: false
+        enable_queue_stats_worker: false
+        enable_notification_worker: false
+
+
+monolog:
+    handlers:
+        main:
+            level: error
+            buffer_size: 30
+        business_event_handler_buffer:
+            level: error
 EOF
 
 FROM ghcr.io/shyim/wolfi-php/nginx:8.3
@@ -31,6 +62,12 @@ ENV DATABASE_URL=mysql://root:root@localhost/shopware \
     LOCK_DSN=flock \
     PHP_MEMORY_LIMIT=512M \
     COMPOSER_ROOT_VERSION=1.0.0 \
+    TRUSTED_PROXIES=REMOTE_ADDR \
+    SHOPWARE_CACHE_ID=docker \
+    PHP_OPCACHE_FILE_OVERRIDE=1 \
+    SQL_SET_DEFAULT_SESSION_VARIABLES=0 \
+    DATABASE_PERSISTENT_CONNECTION=1 \
+    APP_URL_CHECK_DISABLED=1 \
     APP_URL=http://localhost:8000
 
 COPY --from=composer/composer:2-bin /composer /usr/bin/composer
@@ -68,6 +105,7 @@ RUN <<EOF
         php-8.3-zip \
         php-8.3-sodium \
         php-8.3-opcache \
+        php-8.3-zstd \
         openssl-config \
         mariadb \
         mariadb-client \
@@ -112,6 +150,8 @@ RUN <<EOF
     rm -rf var/cache/* /var/tmp/*
     php bin/console
     chown -R www-data:www-data /var/www/html /var/lib/mariadb/ /var/tmp /run/mysqld/
+    echo "worker: /forever.sh php /var/www/html/bin/console messenger:consume --all --memory-limit=512M --time-limit=60" | tee -a /etc/Procfile
+    echo "scheduled-task: /forever.sh php /var/www/html/bin/console scheduled-task:run --memory-limit=512M --time-limit=60" | tee -a /etc/Procfile
 EOF
 
 USER www-data

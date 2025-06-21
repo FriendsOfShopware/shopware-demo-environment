@@ -27,9 +27,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Nushell
-        uses: hustcer/setup-nu@v3.8
-
       - name: Generate Matrix
         id: generate-matrix
         run: |

@@ -3,7 +3,14 @@
 set -e
 set -x
 
-/usr/bin/mariadbd --basedir=/usr --datadir=/var/lib/mariadb --plugin-dir=/usr/lib/mariadb/plugin --user=www-data &
+/usr/bin/mariadbd \
+    --basedir=/usr \
+    --datadir=/var/lib/mariadb \
+    --plugin-dir=/usr/lib/mariadb/plugin \
+    --group_concat_max_len=320000 \
+    --default-time-zone=+00:00 \
+    --sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION \
+    --user=www-data &
 
 while ! mariadb-admin ping --silent; do
     sleep 1

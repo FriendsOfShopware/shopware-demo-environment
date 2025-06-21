@@ -39,7 +39,7 @@ async function getMatrix() {
                 };
             })
             .reverse()
-            .filter(item => versionCompare(item.shopwareVersion, '6.5.8'));
+            .filter(item => versionCompare(item.shopwareVersion, '6.6.10'));
 
         // Remove duplicates by minorShopwareVersion, preferring stable versions
         const uniqueVersions = versions.reduce((acc, item) => {
