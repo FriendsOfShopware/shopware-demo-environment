@@ -47,4 +47,4 @@ if [[ -f /var/www/html/fixture.php ]]; then
     php -derror_reporting=E_ALL /var/www/html/fixture.php
 fi
 
-exec /usr/bin/hivemind /etc/Procfile
+exec "$@"

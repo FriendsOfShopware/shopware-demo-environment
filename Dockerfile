@@ -1,7 +1,5 @@
-# syntax=docker/dockerfile:1
-# check=skip=SecretsUsedInArgOrEnv
-FROM friendsofshopware/shopware-cli:latest-php-8.3 AS creation
-ARG SHOPWARE_VERSION=6.5.8.2
+FROM ghcr.io/shopware/shopware-cli:latest-php-8.3 AS creation
+ARG SHOPWARE_VERSION=6.7.2.0
 
 RUN <<EOF
     set -e
@@ -54,63 +52,26 @@ monolog:
             level: error
 EOF
 
-FROM ghcr.io/shyim/wolfi-php/nginx:8.3
+FROM ghcr.io/shopware/docker-base:8.3-caddy
+ARG SHOPWARE_VERSION=6.7.2.0
 
-COPY --from=creation /shop /var/www/html
-
-ENV DATABASE_URL=mysql://root:root@localhost/shopware \
-    LOCK_DSN=flock \
-    PHP_MEMORY_LIMIT=512M \
-    COMPOSER_ROOT_VERSION=1.0.0 \
-    TRUSTED_PROXIES=REMOTE_ADDR \
-    SHOPWARE_CACHE_ID=docker \
-    PHP_OPCACHE_FILE_OVERRIDE=1 \
-    SQL_SET_DEFAULT_SESSION_VARIABLES=0 \
-    DATABASE_PERSISTENT_CONNECTION=1 \
-    APP_URL_CHECK_DISABLED=1 \
-    APP_URL=http://localhost:8000
-
-COPY --from=composer/composer:2-bin /composer /usr/bin/composer
+ENV APP_URL=http://localhost:8000 \
+    PHP_OPCACHE_VALIDATE_TIMESTAMPS=1 \
+    PHP_OPCACHE_FILE_OVERRIDE=0
 
 USER root
 
 RUN <<EOF
     set -e
-
-    apk add --no-cache \
-        php-8.3 \
-        php-8.3-fileinfo \
-        php-8.3-openssl \
-        php-8.3-ctype \
-        php-8.3-curl \
-        php-8.3-xml \
-        php-8.3-dom \
-        php-8.3-phar \
-        php-8.3-simplexml \
-        php-8.3-xmlreader \
-        php-8.3-xmlwriter \
-        php-8.3-bcmath \
-        php-8.3-iconv \
-        php-8.3-mbstring \
-        php-8.3-gd \
-        php-8.3-intl \
-        php-8.3-pdo \
-        php-8.3-pdo_mysql \
-        php-8.3-mysqlnd \
-        php-8.3-pcntl \
-        php-8.3-sockets \
-        php-8.3-bz2 \
-        php-8.3-gmp \
-        php-8.3-soap \
-        php-8.3-zip \
-        php-8.3-sodium \
-        php-8.3-opcache \
-        php-8.3-zstd \
-        openssl-config \
+    apk add \
+        --no-cache \
         mariadb \
-        mariadb-client \
-        jq
+        mariadb-client
 EOF
+
+COPY --link --from=composer/composer:2-bin /composer /usr/local/bin/composer
+COPY --link rootfs /
+COPY --link --from=creation /shop /var/www/html
 
 RUN <<EOF
     set -e
@@ -150,14 +111,32 @@ RUN <<EOF
     rm -rf var/cache/* /var/tmp/*
     php bin/console
     chown -R www-data:www-data /var/www/html /var/lib/mariadb/ /var/tmp /run/mysqld/
-    echo "worker: /forever.sh php /var/www/html/bin/console messenger:consume --all --memory-limit=512M --time-limit=60" | tee -a /etc/Procfile
-    echo "scheduled-task: /forever.sh php /var/www/html/bin/console scheduled-task:run --memory-limit=512M --time-limit=60" | tee -a /etc/Procfile
+
+    echo "[program:worker]" | tee -a /etc/supervisord.conf
+    echo "process_name=worker" | tee -a /etc/supervisord.conf
+    echo "command=php /var/www/html/bin/console messenger:consume --all --memory-limit=512M --time-limit=60" | tee -a /etc/supervisord.conf
+    echo "numprocs=1" | tee -a /etc/supervisord.conf
+    echo "autostart=true" | tee -a /etc/supervisord.conf
+    echo "autorestart=true" | tee -a /etc/supervisord.conf
+    echo "" | tee -a /etc/supervisord.conf
+
+    echo "[program:scheduled-task]" | tee -a /etc/supervisord.conf
+    echo "process_name=scheduled-task" | tee -a /etc/supervisord.conf
+    echo "command=php /var/www/html/bin/console scheduled-task:run --memory-limit=512M --time-limit=60" | tee -a /etc/supervisord.conf
+    echo "numprocs=1" | tee -a /etc/supervisord.conf
+    echo "autostart=true" | tee -a /etc/supervisord.conf
+    echo "autorestart=true" | tee -a /etc/supervisord.conf
 EOF
+
+LABEL org.opencontainers.image.vendor="FriendsOfShopware" \
+    org.opencontainers.image.url="https://github.com/FriendsOfShopware/shopware-demo-environment" \
+    org.opencontainers.image.documentation="https://github.com/FriendsOfShopware/shopware-demo-environment" \
+    org.opencontainers.image.source="https://github.com/FriendsOfShopware/shopware-demo-environment" \
+    org.opencontainers.image.title="Shopware 6 Demo" \
+    org.opencontainers.image.version="${SHOPWARE_VERSION}" \
+    org.opencontainers.image.description="This is a Shopware installation with demo data for testing purposes."
 
 USER www-data
 
-COPY --link rootfs/ /
-
-STOPSIGNAL SIGKILL
-
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT [ "/entrypoint" ]
+CMD [ "/usr/bin/supervisord", "-c", "/etc/supervisord.conf" ]
