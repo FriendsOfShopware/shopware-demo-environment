@@ -37,7 +37,7 @@ jobs:
 
   build:
       name: "${{ matrix.minorShopwareVersion }} (${{ matrix.shopwareVersion }})"
-      runs-on: ubuntu-latest
+      runs-on: namespace-profile-default
       needs: [generate-matrix]
       strategy: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
       steps:
