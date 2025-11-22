@@ -4,7 +4,7 @@ ARG SHOPWARE_VERSION=6.7.2.0
 RUN <<EOF
     set -e
     export COMPOSER_ALLOW_SUPERUSER=1
-    shopware-cli project create /shop ${SHOPWARE_VERSION}
+    shopware-cli project create /shop ${SHOPWARE_VERSION} --no-audit
     shopware-cli project ci /shop
     composer -d /shop require "swag/demo-data:*"
 EOF
