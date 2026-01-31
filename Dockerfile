@@ -58,7 +58,9 @@ ARG SHOPWARE_VERSION=6.7.2.0
 ENV APP_URL=http://localhost:8000 \
     PHP_OPCACHE_VALIDATE_TIMESTAMPS=1 \
     PHP_OPCACHE_FILE_OVERRIDE=0 \
-    DATABASE_URL=mysql://root:root@localhost/shopware
+    DATABASE_URL=mysql://root:root@localhost/shopware \
+    SHOPWARE_HTTP_CACHE_ENABLE_VARNISH=0 \
+    SHOPWARE_VARNISH_HOSTS=""
 
 USER root
 

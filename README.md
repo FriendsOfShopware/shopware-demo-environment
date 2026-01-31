@@ -19,6 +19,35 @@ docker run \
 
 You can additionally set `SHOPWARE_ADMIN_PASSWORD` to set a different admin password.
 
+### Varnish HTTP Cache
+
+To enable Varnish HTTP cache support, set the `SHOPWARE_HTTP_CACHE_ENABLE_VARNISH` environment variable to `1`:
+
+```bash
+docker run \
+    --rm \
+    -e APP_URL=http://localhost:8000 \
+    -e SHOPWARE_HTTP_CACHE_ENABLE_VARNISH=1 \
+    -p 8000:8000 \
+    ghcr.io/friendsofshopware/shopware-demo-environment:6.5.8
+```
+
+You can configure the Varnish host using the `SHOPWARE_VARNISH_HOSTS` environment variable:
+
+```bash
+docker run \
+    --rm \
+    -e APP_URL=http://localhost:8000 \
+    -e SHOPWARE_HTTP_CACHE_ENABLE_VARNISH=1 \
+    -e SHOPWARE_VARNISH_HOSTS="http://varnish.example.com" \
+    -p 8000:8000 \
+    ghcr.io/friendsofshopware/shopware-demo-environment:6.5.8
+```
+
+If `SHOPWARE_VARNISH_HOSTS` is not specified, it defaults to `http://varnish`.
+
+For more information about Varnish configuration with Shopware, see the [official documentation](https://developer.shopware.com/docs/guides/hosting/infrastructure/reverse-http-cache.html).
+
 To install Shopware 6 extensions you will need to set the `EXTENSIONS` environment variable. This variable should be a space separated list of composer packages. For example:
 
 ```bash

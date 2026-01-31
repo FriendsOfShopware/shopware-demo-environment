@@ -47,4 +47,33 @@ if [[ -f /var/www/html/fixture.php ]]; then
     php -derror_reporting=E_ALL /var/www/html/fixture.php
 fi
 
+if [ "$SHOPWARE_HTTP_CACHE_ENABLE_VARNISH" = "1" ]; then
+    export SHOPWARE_HTTP_CACHE_ENABLED=1
+
+    # Create storefront.yaml for Varnish configuration
+    storefront_config="/var/www/html/config/packages/storefront.yaml"
+
+    # Build hosts list
+    if [ -n "$SHOPWARE_VARNISH_HOSTS" ]; then
+        hosts_yaml="                - \"$SHOPWARE_VARNISH_HOSTS\"
+"
+    else
+        hosts_yaml="                - \"varnish\"
+"
+    fi
+
+    # Write the Varnish configuration
+    cat > "$storefront_config" <<EOF
+shopware:
+    http_cache:
+        reverse_proxy:
+            enabled: true
+            ban_method: "BAN"
+            max_parallel_invalidations: 3
+            use_varnish_xkey: true
+            hosts:
+$hosts_yaml
+EOF
+fi
+
 exec "$@"
