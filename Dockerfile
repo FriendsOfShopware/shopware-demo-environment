@@ -58,6 +58,7 @@ ARG SHOPWARE_VERSION=6.7.2.0
 ENV APP_URL=http://localhost:8000 \
     PHP_OPCACHE_VALIDATE_TIMESTAMPS=1 \
     PHP_OPCACHE_FILE_OVERRIDE=0 \
+    SHOPWARE_DBAL_TIMEZONE_SUPPORT_ENABLED=1 \
     DATABASE_URL=mysql://root:root@localhost/shopware \
     SHOPWARE_HTTP_CACHE_ENABLE_VARNISH=0 \
     SHOPWARE_VARNISH_HOSTS=""
@@ -69,7 +70,8 @@ RUN <<EOF
     apk add \
         --no-cache \
         mariadb \
-        mariadb-client
+        mariadb-client \
+        tzdata
 EOF
 
 COPY --link --from=composer/composer:2-bin /composer /usr/local/bin/composer
