@@ -102,6 +102,8 @@ RUN <<EOF
     fi
 
     mariadb-admin --user=root password 'root'
+    mariadb-tzinfo-to-sql /usr/share/zoneinfo | mariadb -proot mysql
+    
     php bin/console system:install --create-database --force
     mariadb -proot shopware -e "DELETE FROM sales_channel WHERE id = 0x98432def39fc4624b33213a56b8c944d"
     php bin/console user:create "admin" --admin --password="shopware" -n
