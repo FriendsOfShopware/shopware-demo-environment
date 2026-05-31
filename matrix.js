@@ -31,11 +31,13 @@ async function getMatrix() {
             .map(([key, value]) => {
                 const versionSplit = key.split('.');
                 const version = [versionSplit[0], versionSplit[1], versionSplit[2]].join('.');
-                
+                const majorMinor = [versionSplit[0], versionSplit[1]].join('.');
+
                 return {
                     phpVersion: value,
                     shopwareVersion: key.toLowerCase(),
-                    minorShopwareVersion: version
+                    minorShopwareVersion: version,
+                    majorMinorShopwareVersion: majorMinor
                 };
             })
             .reverse()
@@ -61,6 +63,35 @@ async function getMatrix() {
             
             return acc;
         }, []);
+
+        // Sort newest-first by semantic version so the latest patch is reliably
+        // first within each major.minor group (source order is not numeric-aware,
+        // e.g. it can place 6.7.9 after 6.7.10).
+        uniqueVersions.sort((a, b) => {
+            const aParts = a.minorShopwareVersion.split('.').map(Number);
+            const bParts = b.minorShopwareVersion.split('.').map(Number);
+
+            for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+                const diff = (bParts[i] || 0) - (aParts[i] || 0);
+                if (diff !== 0) return diff;
+            }
+            return 0;
+        });
+
+        // Mark the latest patch within each major.minor group so it also gets
+        // a floating major.minor tag (e.g. 6.7, 6.6). uniqueVersions is ordered
+        // newest-first, so the first entry seen per group is the latest patch,
+        // and the very first entry overall is the latest version (gets `latest`).
+        const seenMajorMinor = new Set();
+        uniqueVersions.forEach((item, index) => {
+            if (!seenMajorMinor.has(item.majorMinorShopwareVersion)) {
+                seenMajorMinor.add(item.majorMinorShopwareVersion);
+                item.isLatestMinor = true;
+            } else {
+                item.isLatestMinor = false;
+            }
+            item.isLatest = index === 0;
+        });
 
         data.matrix.include = uniqueVersions;
 
