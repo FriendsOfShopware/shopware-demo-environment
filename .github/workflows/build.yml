@@ -56,11 +56,32 @@ jobs:
         - name: Configure Namespace powered Buildx
           uses: namespacelabs/nscloud-setup-buildx-action@v0
 
+        - name: Build tags
+          id: tags
+          env:
+            PATCH_VERSION: ${{ matrix.minorShopwareVersion }}
+            MINOR_VERSION: ${{ matrix.majorMinorShopwareVersion }}
+            IS_LATEST_MINOR: ${{ matrix.isLatestMinor }}
+            IS_LATEST: ${{ matrix.isLatest }}
+          run: |
+            {
+              echo 'tags<<EOF'
+              echo "ghcr.io/friendsofshopware/shopware-demo-environment:${PATCH_VERSION}"
+              echo "friendsofshopware/shopware-demo-environment:${PATCH_VERSION}"
+              if [ "$IS_LATEST_MINOR" = "true" ]; then
+                echo "ghcr.io/friendsofshopware/shopware-demo-environment:${MINOR_VERSION}"
+                echo "friendsofshopware/shopware-demo-environment:${MINOR_VERSION}"
+              fi
+              if [ "$IS_LATEST" = "true" ]; then
+                echo "ghcr.io/friendsofshopware/shopware-demo-environment:latest"
+                echo "friendsofshopware/shopware-demo-environment:latest"
+              fi
+              echo 'EOF'
+            } >> "$GITHUB_OUTPUT"
+
         - uses: docker/build-push-action@v7
           with:
-            tags: |
-              ghcr.io/friendsofshopware/shopware-demo-environment:${{ matrix.minorShopwareVersion }}
-              friendsofshopware/shopware-demo-environment:${{ matrix.minorShopwareVersion }}
+            tags: ${{ steps.tags.outputs.tags }}
             platforms: linux/amd64,linux/arm64
             build-args: |
               PHP_VERSION=${{ matrix.phpVersion }}
