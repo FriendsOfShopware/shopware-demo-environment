@@ -30,6 +30,11 @@ if [[  ! -z "$EXTENSIONS" ]]; then
         composer config bearer.packages.shopware.com "$SHOPWARE_PACKAGIST_TOKEN"
     fi
 
+    if [[ ! -z "$FOS_PACKAGIST_TOKEN" ]]; then
+        composer config repositories.fos-packages '{"type": "composer", "url": "https://packages.fos.gg"}'
+        composer config bearer.packages.fos.gg "$FOS_PACKAGIST_TOKEN"
+    fi
+
     composer req $EXTENSIONS
 
     php bin/console plugin:refresh
