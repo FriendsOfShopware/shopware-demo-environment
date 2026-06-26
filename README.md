@@ -73,6 +73,20 @@ docker run \
     ghcr.io/friendsofshopware/shopware-demo-environment:6.5.8
 ```
 
+For plugins hosted on [packages.fos.gg](https://packages.fos.gg), pass the `FOS_PACKAGIST_TOKEN` environment variable.
+
+Example:
+
+```bash
+docker run \
+    --rm \
+    -e APP_URL=http://localhost:8000 \
+    -e EXTENSIONS="..." \
+    -e FOS_PACKAGIST_TOKEN=your-token \
+    -p 8000:8000 \
+    ghcr.io/friendsofshopware/shopware-demo-environment:6.5.8
+```
+
 ## Running multiple containers
 
 If you want to run multiple containers, you should deploy a Traefik before the containers. This will allow you to access the containers via different subdomains.
