@@ -8,7 +8,9 @@ on:
       - main
     paths:
       - Dockerfile
-      - matrix.nu
+      - main.go
+      - go.mod
+      - go.sum
 
 env:
   DOCKER_BUILDKIT: 1
@@ -27,10 +29,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+
       - name: Generate Matrix
         id: generate-matrix
         run: |
-          MATRIX=$(node matrix.js)
+          MATRIX=$(go run .)
           echo "matrix<<EOF" >> $GITHUB_OUTPUT
           echo "$MATRIX" >> $GITHUB_OUTPUT
           echo 'EOF' >> $GITHUB_OUTPUT
